@@ -30,7 +30,7 @@ def get_visitorship():
 		return jsonify([c.serialize() for c in caps])	
 
 @app.route('/getHourlyData', methods=['GET'])
-def get_menu():
+def get_hourlydata():
 	if 'reportDate' in request.args:
 		reportDate = (request.args.get('reportDate'))
 		hour = Report_hour.query.filter_by(report_date=reportDate).first()
