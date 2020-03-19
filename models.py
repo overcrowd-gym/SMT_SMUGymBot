@@ -3,7 +3,7 @@ import datetime
 from app import db
 
 
-class visitorship(db.Model):
+class Visitorship(db.Model):
 	__tablename__ = 'visitorship'
 
 	report_date = db.Column(db.Date, primary_key=True)
@@ -20,12 +20,12 @@ class visitorship(db.Model):
 
 	def serialize(self):
 		return {
-			'report_date': self.report_date, 
-			'total_capacity': self.total_capacity,
+			'reportDate': self.report_date, 
+			'totalCapacity': self.total_capacity,
 		}
 
 
-class report_hour(db.Model):
+class Report_hour(db.Model):
 	__tablename__ = 'report_hour'
 
 	# hour have to use datetime format first then trancate the time after that
@@ -38,10 +38,20 @@ class report_hour(db.Model):
 
 	# put this within the Review class
 	def __init__(self, datetime, gender, capacity):
-		self.date = date
+		self.date = datetime
 		self.gender = gender
 		self.capacity = capacity 
 
+	def serialize(self): #not sure if this is right
+			return {
+				'reportDate': self.report_date, 
+				'response': [
+					{
+						"gender": self.gender,
+						"capacity": self.capacity
+					}
+				]
+			}
 
 
 
