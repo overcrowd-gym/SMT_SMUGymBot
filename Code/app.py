@@ -19,6 +19,20 @@ db = SQLAlchemy(app)
 from models import Visitorship, Report_hour
 
 # Step 05: add routes and their binded functions here
+
+# def to_date(date_string): 
+#     try:
+#         return datetime.datetime.strptime(dateString, "%Y-%m-%d").date()
+#     except ValueError:
+#         raise ValueError('{} is not valid date in the format YYYY-MM-DD'.format(date_string))
+
+# @app.route()
+# def event():
+#     try:
+#         ektempo = to_date(request.args.get('start', default = datetime.date.today().isoformat()))
+#     except ValueError as ex:
+#         return jsonify({'error': str(ex)}), 400   # jsonify, if this is a json api
+
 @app.route('/getVisitorship', methods=['GET'])
 def get_visitorship():
 	if 'reportDate' in request.args:
