@@ -178,7 +178,7 @@ def get_prediction():
 	time = request.args['time']
 
 	if 'num_limit' in request.args:
-		num_limit = request.args['num_limit']
+		num_limit = int(request.args['num_limit'])
 	else:
 		num_limit = 45
 
