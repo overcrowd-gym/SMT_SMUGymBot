@@ -4,6 +4,8 @@ from app import db
 from sqlalchemy.dialects.postgresql import TIME
 import datetime
 from sqlalchemy.types import TypeDecorator, TIMESTAMP
+from collections import OrderedDict
+
 
 
 class Visitorship(db.Model):
@@ -22,13 +24,24 @@ class Visitorship(db.Model):
 		self.total_capacity = total_capacity
 		self.visit_hour = [] if visit_hour is None else visit_hour
 
+	def serialize_whour(self):
+		return {
+			'reportDate': self.report_date.strftime('%d-%m-%y'), 
+			# 'totalCapacity': self.total_capacity,
+			'response':[{"hour": v.hour.strftime('%H:%M'), "gender":v.gender, "capacity":v.capacity, } for v in self.visit_hour]
+		}
+	
 	def serialize(self):
 		return {
 			'reportDate': self.report_date.strftime('%d-%m-%y'), 
-			'totalCapacity': self.total_capacity,
-			'response':[{"gender":v.gender, "capacity":v.capacity, "hour": v.hour.strftime('%H:%M')} for v in self.visit_hour]
+			'totalCapacity': self.total_capacity
 		}
 
+	def _asdict(self):
+		result = OrderedDict()
+		for key in self.__mapper__.c.keys():
+			result[key] = getattr(self, key)
+		return result
 
 
 class Report_hour(db.Model):
@@ -52,13 +65,18 @@ class Report_hour(db.Model):
 		self.capacity = capacity 
 
 	def serialize(self): #not sure if this is right
-			return {
-				'reportDate': self.report_date.strftime('%d-%m-%y'),
-				'hour': self.hour.strftime('%H:%M'),
-				'gender': self.gender,
-				'capacity': self.capacity
-			}
+		return {
+			'reportDate': self.report_date.strftime('%d-%m-%y'),
+			'hour': self.hour.strftime('%H:%M'),
+			'gender': self.gender,
+			'capacity': self.capacity
+		}
 	
+	def getcapacity(self):
+		return {
+			'sum':self.sum
+		}
+
 
 
 
