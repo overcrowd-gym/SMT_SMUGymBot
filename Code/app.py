@@ -10,13 +10,9 @@ from sqlalchemy.sql import extract
 from sqlalchemy.sql import func
 from statistics import mean
 
-
-
-
 # Step 02: initialize flask app here 
 app = Flask(__name__)
 app.debug = True
-
 
 # Step 03: add database configurations here
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://smugymuser:888000@localhost:5432/smugym'
@@ -174,13 +170,14 @@ def get_weekdata():
 # "prediction" of whether a particular day of the week and time will be busy (based on historical data)
 @app.route('/getprediction/', methods=['GET']) 
 def get_prediction():
+	result = {}
 	weekday_num = request.args['weekday_num']
 	time = request.args['time']
 
 	if 'num_limit' in request.args:
 		num_limit = int(request.args['num_limit'])
 	else:
-		num_limit = 45
+		num_limit = 25
 
 	# visits = Report_hour.query.filter(Report_hour.hour==time).filter(extract('dow',Report_hour.report_date)==weekday_num)
 	visits = Report_hour.query.with_entities(func.sum(Report_hour.capacity).label("sum")).filter(Report_hour.hour==time).filter(extract('dow',Report_hour.report_date)==weekday_num).group_by(Report_hour.report_date)
@@ -188,12 +185,14 @@ def get_prediction():
 	visit_list = [visit.sum for visit in visits]
 	avg_visit = round(mean(visit_list))
 	print(avg_visit)
+	result["average"] = avg_visit
 
 	if avg_visit < num_limit:
-		return jsonify('empty with an average of {} '.format(avg_visit))
+		result["status"] = "empty"
 	else:
-		return jsonify('busy with an average of {}'.format(avg_visit))
+		result["status"] = "busy"
 
+	return jsonify(result)
 
 #------------------------------------ ADD DATA INTO DB --------------------------------------#
 @app.route('/reporthour', methods=['POST'])
